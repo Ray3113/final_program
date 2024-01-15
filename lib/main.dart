@@ -20,7 +20,6 @@ Map<String, List<Music>> languageMusicMap = {
   ],
   'Japanese': [
     Music(title: '米津玄師-灰色と青（+菅田将暉 ）', filePath: 'Japanese/Haiirotoao.mp3'),
-    Music(title: '4', filePath: 'Japanese/4.mp3'),
     Music(title: 'finale', filePath: 'Japanese/finale.mp3'),
     Music(title: 'レミオロメン-粉雪', filePath: 'Japanese/konayuki.mp3'),
 
