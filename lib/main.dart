@@ -14,12 +14,15 @@ class Music {
 
 Map<String, List<Music>> languageMusicMap = {
   'Chinese': [
-    Music(title: 'Chinese Song 1', filePath: 'Chinese/3.mp3'),
-
+    Music(title: '周杰倫 Jay Chou【夜曲 Nocturne】-Official Music Video.mp3', filePath: 'Chinese/Nocturne.mp3'),
+    Music(title: '韋禮安-如果可以', filePath: 'Chinese/if possible.mp3'),
+    Music(title: '田馥甄-小幸運', filePath: 'Chinese/luck.mp3'),
   ],
   'Japanese': [
-    Music(title: 'Japanese Song 1', filePath: 'Japanese/4.mp3'),
-    Music(title: 'Japanese Song 2', filePath: 'Japanese/7.mp3'),
+    Music(title: '米津玄師-灰色と青（+菅田将暉 ）', filePath: 'Japanese/Haiirotoao.mp3'),
+    Music(title: 'finale', filePath: 'Japanese/finale.mp3'),
+    Music(title: 'レミオロメン-粉雪', filePath: 'Japanese/konayuki.mp3'),
+
 
   ],
   'English': [
@@ -150,8 +153,8 @@ class MusicPlayerScreen extends StatefulWidget {
 
 
 class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
-  AudioPlayer _audioPlayer = AudioPlayer();
-  bool isPlaying = false;
+  AudioPlayer _audioPlayer = AudioPlayer()..setReleaseMode(ReleaseMode.loop);
+  bool isPlaying = true;
   int currentIndex = 0;
 
   @override
@@ -193,22 +196,43 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
       isPlaying = !isPlaying;
     });
   }
+
   void _next() {
-    if (currentIndex < (languageMusicMap[widget.mp3Files]?.length ?? 0) -1) {
+    if (currentIndex < (languageMusicMap[widget.mp3Files]?.length ?? 1) - 1) {
       currentIndex++;
-      _loadMusic();
-      _playPause();
     }
+    else {
+      currentIndex = 0;
+    }
+
+
+    setState(() {
+      isPlaying = true;
+    });
+
+    _loadMusic();
   }
 
   void _previous() {
     if (currentIndex > 0) {
       currentIndex--;
-      _loadMusic();
-      _playPause();
     }
-  }
+    else {
+      currentIndex = (languageMusicMap[widget.mp3Files]?.length ?? 1) - 1;
+    }
 
+
+    setState(() {
+      isPlaying = true;
+    });
+
+    _loadMusic();
+  }
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -228,12 +252,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
               width: 500,
             ),
             Text(
-              'Song Title: ${languageMusicMap[widget.mp3Files]
-                  ?.elementAt(currentIndex)
-                  .filePath
-                  .split('/')
-                  .last
-                  .replaceAll('.mp3', '') ?? ''}',
+              'Song Title: ${languageMusicMap[widget.mp3Files]?.elementAt(currentIndex).title}',
             ),
             SizedBox(height: 20),
             Row(
