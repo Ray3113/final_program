@@ -20,6 +20,7 @@ Map<String, List<Music>> languageMusicMap = {
   ],
   'Japanese': [
     Music(title: '米津玄師-灰色と青（+菅田将暉 ）', filePath: 'Japanese/Haiirotoao.mp3'),
+    Music(title: '4', filePath: 'Japanese/4.mp3'),
     Music(title: 'finale', filePath: 'Japanese/finale.mp3'),
     Music(title: 'レミオロメン-粉雪', filePath: 'Japanese/konayuki.mp3'),
 
@@ -145,15 +146,24 @@ class MusicPlayerScreen extends StatefulWidget {
 
 
 class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
-  AudioPlayer _audioPlayer = AudioPlayer()..setReleaseMode(ReleaseMode.loop);
+  AudioPlayer _audioPlayer = AudioPlayer();
+  // ..setReleaseMode(ReleaseMode.loop);
   bool isPlaying = true;
   int currentIndex = 0;
   String image_name='images/p1.jpg';
+
   @override
   void initState() {
     super.initState();
     print('mp3Files: ${widget.mp3Files}');
+
     _loadMusic();
+
+    _audioPlayer.onPlayerStateChanged.listen((PlayerState state) {
+      if (state == PlayerState.completed) {
+        _next();
+      }
+    });
   }
 
   void _loadMusic() async {
@@ -164,6 +174,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
       await _audioPlayer.play(AssetSource(languageMusicMap[widget.mp3Files]
           ?.elementAt(currentIndex)
           .filePath ?? ''));
+
     } else {
       print('Invalid mp3Files or currentIndex');
     }
@@ -220,6 +231,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
 
     _loadMusic();
   }
+
   @override
   void dispose() {
     _audioPlayer.dispose();
