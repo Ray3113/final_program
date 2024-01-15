@@ -15,8 +15,8 @@ class Music {
 Map<String, List<Music>> languageMusicMap = {
   'Chinese': [
     Music(title: '周杰倫 Jay Chou【夜曲 Nocturne】-Official Music Video.mp3', filePath: 'Chinese/Nocturne.mp3'),
-    Music(title: '韋禮安-如果可以', filePath: 'Chinese/if possible.mp3'),
-    Music(title: '田馥甄-小幸運', filePath: 'Chinese/luck.mp3'),
+    Music(title: '韋禮安-如果可以', filePath: 'Chinese/if.mp3'),
+    Music(title: '田馥甄-小幸運', filePath: 'Chinese/smallLuck.mp3'),
   ],
   'Japanese': [
     Music(title: '米津玄師-灰色と青（+菅田将暉 ）', filePath: 'Japanese/Haiirotoao.mp3'),
@@ -26,8 +26,8 @@ Map<String, List<Music>> languageMusicMap = {
 
   ],
   'English': [
-    Music(title: 'English Song 1', filePath: 'English/1.mp3'),
-    Music(title: 'English Song 2', filePath: 'English/2.mp3'),
+    Music(title: 'Never Gonna Give You Up', filePath: 'English/Nevergiveyouup.mp3'),
+    Music(title: 'Flo Rida - Whistle [Official Video]', filePath: 'English/Whistle.mp3'),
   ],
 };
 
@@ -53,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 5), () {
+    Timer(Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LanguageSelectionScreen()),
@@ -74,29 +74,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
-Future<List<String>> _getMp3Files(String languageFolder) async {
-  try {
-    List<String> mp3Files = [];
-    String folderPath = languageFolder;
-    Directory directory = Directory(folderPath);
-
-    List<FileSystemEntity> fileList = directory.listSync(recursive: true);
-    for (var file in fileList) {
-      if (file is File && file.path.endsWith('.mp3')) {
-        mp3Files.add(file.path);
-      }
-    }
-
-    return mp3Files;
-  } catch (e) {
-    print('Error: $e');
-    return Future.error('Failed to get MP3 files');
-  }
-}
-
 
 void _navigateToMusicPlayer(BuildContext context, String mp3Files) {
-  Navigator.pushReplacement(
+  Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => MusicPlayerScreen(mp3Files)),
   );
@@ -118,21 +98,33 @@ class LanguageSelectionScreen extends StatelessWidget {
                 String mp3Files = "English";
                 _navigateToMusicPlayer(context, mp3Files);
               },
-              child: Text('English'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20), // 調整padding大小
+                backgroundColor: Colors.greenAccent,
+              ),
+              child: Text('English',style: TextStyle(fontSize: 20),),
             ),
             ElevatedButton(
               onPressed: () async {
                 String mp3Files = "Chinese";
                 _navigateToMusicPlayer(context, mp3Files);
               },
-              child: Text('中文'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20), // 調整padding大小
+                backgroundColor: Colors.orangeAccent,
+              ),
+              child: Text('中 文',style: TextStyle(fontSize: 20),),
             ),
             ElevatedButton(
               onPressed: () async {
                 String mp3Files = "Japanese";
                 _navigateToMusicPlayer(context, mp3Files);
               },
-              child: Text('日本語'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 45, vertical: 20), // 調整padding大小
+                backgroundColor: Colors.greenAccent,
+              ),
+              child: Text('日本語',style: TextStyle(fontSize: 20),),
             ),
           ],
         ),
@@ -156,7 +148,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
   AudioPlayer _audioPlayer = AudioPlayer()..setReleaseMode(ReleaseMode.loop);
   bool isPlaying = true;
   int currentIndex = 0;
-
+  String image_name='images/p1.jpg';
   @override
   void initState() {
     super.initState();
@@ -181,7 +173,9 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
   void _playPause() {
     if (isPlaying) {
       _audioPlayer.pause();
+      image_name='images/p2.jpg';
     } else {
+      image_name='images/p1.jpg';
       if (currentIndex >= 0 &&
           currentIndex < (languageMusicMap[widget.mp3Files]?.length ?? 0)) {
         _audioPlayer.play(AssetSource(languageMusicMap[widget.mp3Files]
@@ -200,8 +194,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
   void _next() {
     if (currentIndex < (languageMusicMap[widget.mp3Files]?.length ?? 1) - 1) {
       currentIndex++;
-    }
-    else {
+    } else {
       currentIndex = 0;
     }
 
@@ -216,8 +209,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
   void _previous() {
     if (currentIndex > 0) {
       currentIndex--;
-    }
-    else {
+    } else {
       currentIndex = (languageMusicMap[widget.mp3Files]?.length ?? 1) - 1;
     }
 
@@ -238,7 +230,22 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('音樂撥放器'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Row(
+          children: [
+            // Spacer(), // 彈簧
+            Padding(
+              padding: EdgeInsets.only(left: 80.0), // 調整邊距
+              child: Text('音樂播放器'),
+            ),
+            // Spacer(),
+          ],
+        ),
       ),
       body: Center(
         child: Column(
@@ -246,8 +253,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
 
           children: [
             Container(
-              color: Colors.lightBlueAccent,
-              child: Image.asset('images/f1.jpg'),
+              color: Colors.black12,
+              child: Image.asset(image_name),
               height: 500,
               width: 500,
             ),
@@ -278,4 +285,3 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     );
   }
 }
-
